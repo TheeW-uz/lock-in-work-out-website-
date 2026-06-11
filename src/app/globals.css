@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Obsidian Dark Theme - Default */
+  --bg-primary: #08090d;
+  --bg-secondary: #0e1118;
+  --bg-tertiary: #151923;
+  --bg-hover: #1f2535;
+  --border-primary: #1c2130;
+  --border-active: #323c57;
+  
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  --accent-green: #10b981;
+  --accent-green-glow: rgba(16, 185, 129, 0.15);
+  --accent-purple: #8b5cf6;
+  --accent-purple-glow: rgba(139, 92, 246, 0.15);
+  --accent-red: #ef4444;
+  --accent-red-glow: rgba(239, 68, 68, 0.15);
+  --accent-blue: #3b82f6;
+  --accent-blue-glow: rgba(59, 130, 246, 0.15);
+  --accent-yellow: #f59e0b;
+  --accent-yellow-glow: rgba(245, 158, 11, 0.15);
+  
+  --sidebar-width: 280px;
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
+[data-theme="light"] {
+  /* Light Theme */
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f3f4f6;
+  --bg-hover: #e5e7eb;
+  --border-primary: #e5e7eb;
+  --border-active: #d1d5db;
+  
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  
+  --accent-green: #059669;
+  --accent-green-glow: rgba(5, 150, 105, 0.1);
+  --accent-purple: #7c3aed;
+  --accent-purple-glow: rgba(124, 58, 237, 0.1);
+  --accent-red: #dc2626;
+  --accent-red-glow: rgba(220, 38, 38, 0.1);
+  --accent-blue: #2563eb;
+  --accent-blue-glow: rgba(37, 99, 235, 0.1);
+  --accent-yellow: #d97706;
+  --accent-yellow-glow: rgba(217, 119, 6, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(14, 17, 24, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-primary);
+}
+
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border-primary);
+}
+
+/* Scroll utilities */
+.overflow-y-auto {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Fade-in utility */
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease forwards;
+}
+
+/* Light mode: override body background */
+[data-theme="light"] body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--border-primary);
+}
+
+/* Range input thumb styling */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  cursor: pointer;
+  border: 2px solid #6d28d9;
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.4);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  cursor: pointer;
+  border: 2px solid #6d28d9;
+}
+
+/* Toggle switch peer-checked states */
+.peer:checked ~ .peer-checked\:bg-violet-600 {
+  background-color: #7c3aed;
+}
+
+.peer:checked ~ div > .peer-checked\:after\:translate-x-full::after {
+  transform: translateX(100%);
+}
+
+/* Select styling for dark inputs */
+select option {
+  background: #0d0f16;
+  color: #f3f4f6;
+}
+
+/* Textarea */
+textarea {
+  font-family: var(--font-body);
+}
+
+/* Button base reset */
+button {
+  font-family: var(--font-body);
+}
+
+/* Prevent overflow flash on initial load */
+#__next, main {
+  min-height: 0;
+}
