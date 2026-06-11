@@ -1,10 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/auth-provider';
 import { Dumbbell, Mail, Lock, User, AlertCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import LockInBackground from '@/components/lock-in-background';
+
+const quotes = [
+  "Discipline beats motivation.",
+  "Progress compounds.",
+  "One day or day one.",
+  "Stay locked in."
+];
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -17,8 +25,30 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
-  // If already logged in, show loading or let AuthProvider redirect
-  if (loading) {
+  // Quote cycle animation states
+  const [quoteIdx, setQuoteIdx] = useState(0);
+  const [fadeQuote, setFadeQuote] = useState(true);
+
+  useEffect(() => {
+    const quoteInterval = setInterval(() => {
+      setFadeQuote(false);
+      setTimeout(() => {
+        setQuoteIdx((prev) => (prev + 1) % quotes.length);
+        setFadeQuote(true);
+      }, 600);
+    }, 6000);
+
+    return () => clearInterval(quoteInterval);
+  }, []);
+
+  // If already logged in, redirect to dashboard
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
+
+  if (loading || user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#08090d]">
         <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
@@ -92,52 +122,56 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-[#08090d] px-4 py-12">
+      
+      {/* Premium Canvas Interactive Network Animation */}
+      <LockInBackground />
+
       {/* Background Ambient Glows */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[130px] pointer-events-none animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-emerald-600/5 rounded-full blur-[130px] pointer-events-none animate-pulse" />
 
       {/* Main Container */}
       <div className="w-full max-w-[450px] z-10">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 shadow-xl shadow-violet-500/20 mb-5">
-            <Dumbbell className="w-9 h-9 text-white" />
+        <div className="text-center mb-10 select-none">
+          <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 shadow-xl shadow-violet-500/10 mb-5 border border-violet-400/20">
+            <Dumbbell className="w-9 h-9 text-white animate-bounce" style={{ animationDuration: '3s' }} />
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-3" style={{ fontFamily: 'var(--font-display)' }}>
             LOCK-IN
           </h1>
-          <p className="text-zinc-400 text-sm md:text-base font-medium">
-            AI-powered workout tracking and routine builder
+          <p className="text-zinc-500 text-xs md:text-sm font-semibold uppercase tracking-wider">
+            AI Workout Companion & Registry
           </p>
         </div>
 
-        <div className="glass-panel p-10 md:p-12 rounded-3xl shadow-2xl relative overflow-hidden">
+        <div className="glass-panel p-10 md:p-12 rounded-3xl shadow-2xl relative overflow-hidden bg-zinc-950/60 border border-zinc-900/60 backdrop-blur-md">
           {/* Subtle top border reflection */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-zinc-700/50 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-zinc-800/40 to-transparent" />
 
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">
-            {isSignUp ? 'Create your Account' : 'Sign In to Dashboard'}
+          <h2 className="text-xl font-extrabold text-white mb-8 text-center tracking-wide uppercase text-zinc-300">
+            {isSignUp ? 'Create Athlete Account' : 'Sign In to Platform'}
           </h2>
 
           {errorMsg && (
-            <div className={`p-4 rounded-xl flex items-start gap-3 mb-6 border ${
+            <div className={`p-4 rounded-xl flex items-start gap-3 mb-6 border text-xs font-semibold ${
               errorMsg.includes('successful') 
-                ? 'bg-emerald-950/30 border-emerald-800 text-emerald-300' 
-                : 'bg-red-950/30 border-red-800 text-red-300'
+                ? 'bg-emerald-950/20 border-emerald-900/40 text-emerald-400' 
+                : 'bg-red-950/20 border-red-900/40 text-red-400'
             }`}>
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-              <p className="text-sm font-medium">{errorMsg}</p>
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <p className="leading-relaxed">{errorMsg}</p>
             </div>
           )}
 
           <form onSubmit={handleAuth} className="flex flex-col gap-6">
             {isSignUp && (
               <div className="flex flex-col gap-2">
-                <label className="block text-zinc-400 text-xs font-bold uppercase tracking-wider">
+                <label className="block text-zinc-500 text-[10px] font-bold uppercase tracking-wider">
                   Username
                 </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-zinc-500" />
+                    <User className="h-4 w-4 text-zinc-650" />
                   </span>
                   <input
                     type="text"
@@ -145,22 +179,22 @@ export default function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="fit_warrior"
-                    className="w-full bg-[#11131c] border border-zinc-800 focus:border-violet-500 rounded-xl py-4 pl-12 pr-4 text-white placeholder-zinc-600 focus:outline-none transition-all duration-200 text-sm"
+                    className="w-full bg-[#0d0e15]/75 border border-zinc-900 focus:border-violet-600 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-zinc-700 focus:outline-none transition-all text-xs"
                   />
                 </div>
               </div>
             )}
 
             <div className="flex flex-col gap-2">
-              <label className="block text-zinc-400 text-xs font-bold uppercase tracking-wider">
+              <label className="block text-zinc-500 text-[10px] font-bold uppercase tracking-wider">
                 {isSignUp ? 'Email Address' : 'Username or Email'}
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   {isSignUp ? (
-                    <Mail className="h-5 w-5 text-zinc-500" />
+                    <Mail className="h-4 w-4 text-zinc-655" />
                   ) : (
-                    <User className="h-5 w-5 text-zinc-500" />
+                    <User className="h-4 w-4 text-zinc-655" />
                   )}
                 </span>
                 <input
@@ -169,18 +203,18 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={isSignUp ? 'you@example.com' : 'you@example.com or username'}
-                  className="w-full bg-[#11131c] border border-zinc-800 focus:border-violet-500 rounded-xl py-4 pl-12 pr-4 text-white placeholder-zinc-600 focus:outline-none transition-all duration-200 text-sm"
+                  className="w-full bg-[#0d0e15]/75 border border-zinc-900 focus:border-violet-600 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-zinc-700 focus:outline-none transition-all text-xs"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="block text-zinc-400 text-xs font-bold uppercase tracking-wider">
+              <label className="block text-zinc-500 text-[10px] font-bold uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-zinc-500" />
+                  <Lock className="h-4 w-4 text-zinc-655" />
                 </span>
                 <input
                   type="password"
@@ -188,7 +222,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-[#11131c] border border-zinc-800 focus:border-violet-500 rounded-xl py-4 pl-12 pr-4 text-white placeholder-zinc-600 focus:outline-none transition-all duration-200 text-sm"
+                  className="w-full bg-[#0d0e15]/75 border border-zinc-900 focus:border-violet-600 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-zinc-700 focus:outline-none transition-all text-xs"
                 />
               </div>
             </div>
@@ -196,33 +230,41 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold rounded-xl py-4 shadow-xl shadow-violet-500/25 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 text-base mt-4 cursor-pointer disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-violet-600 to-indigo-650 hover:from-violet-550 hover:to-indigo-550 text-white font-bold rounded-xl py-3.5 shadow-xl shadow-violet-500/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-xs mt-4 cursor-pointer disabled:opacity-50"
             >
               {authLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : isSignUp ? (
-                'Create Account'
+                'Create Athlete Account'
               ) : (
                 'Log In'
               )}
             </button>
           </form>
 
-          <div className="mt-8 text-center text-sm border-t border-zinc-800/80 pt-6">
-            <span className="text-zinc-500">
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+          <div className="mt-8 text-center text-xs border-t border-zinc-900/60 pt-6">
+            <span className="text-zinc-550 font-medium">
+              {isSignUp ? 'Already registered?' : "New to the platform?"}{' '}
             </span>
             <button
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setErrorMsg('');
               }}
-              className="text-violet-400 hover:text-violet-300 font-semibold transition-colors focus:outline-none cursor-pointer"
+              className="text-violet-400 hover:text-violet-300 font-bold transition-colors focus:outline-none cursor-pointer"
             >
               {isSignUp ? 'Sign In' : 'Create an Account'}
             </button>
           </div>
         </div>
+
+        {/* Elegant fading quote HUD cycle */}
+        <div className={`mt-8 text-center select-none transition-opacity duration-1000 ${fadeQuote ? 'opacity-40' : 'opacity-0'}`}>
+          <p className="text-[10px] text-white uppercase tracking-[0.25em] font-bold italic">
+            "{quotes[quoteIdx]}"
+          </p>
+        </div>
+
       </div>
     </div>
   );

@@ -280,3 +280,26 @@ drop trigger if exists on_daily_workouts_change on public.daily_workouts;
 create trigger on_daily_workouts_change
   after insert or update or delete on public.daily_workouts
   for each row execute procedure public.update_leaderboard_points();
+
+-- =============================================================
+-- 9. REPORTS & APPEALS TABLE
+-- =============================================================
+create table if not exists public.reports (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  type text not null, -- 'point_recovery', 'ban_appeal', 'freeze_request', 'bug_report'
+  title text not null,
+  description text not null,
+  status text default 'pending', -- 'pending', 'resolved', 'rejected'
+  admin_notes text default '',
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+alter table public.reports enable row level security;
+
+create policy "Users can view their own reports" on public.reports
+  for select using (auth.uid() = user_id);
+
+create policy "Users can insert their own reports" on public.reports
+  for insert with check (auth.uid() = user_id);

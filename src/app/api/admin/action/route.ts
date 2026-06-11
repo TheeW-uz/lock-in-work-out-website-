@@ -167,6 +167,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true });
     }
 
+    else if (action === 'delete_user') {
+      const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
+
+      if (deleteError) {
+        return NextResponse.json({ error: deleteError.message }, { status: 500 });
+      }
+
+      await logAdminAction('delete_user', userId, `Deleted user account permanently`);
+      return NextResponse.json({ success: true });
+    }
+
     else if (action === 'get_user_history') {
       // Get points history
       const { data: points, error: ptsErr } = await adminClient
@@ -182,11 +193,17 @@ export async function POST(request: Request) {
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
-      if (ptsErr || workErr) {
-        return NextResponse.json({ error: ptsErr?.message || workErr?.message }, { status: 500 });
+      // Get weekly plans
+      const { data: weeklyPlans, error: plansErr } = await adminClient
+        .from('weekly_plans')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (ptsErr || workErr || plansErr) {
+        return NextResponse.json({ error: ptsErr?.message || workErr?.message || plansErr?.message }, { status: 500 });
       }
 
-      return NextResponse.json({ points, workouts });
+      return NextResponse.json({ points, workouts, weeklyPlans });
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
